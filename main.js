@@ -1,8 +1,7 @@
-const library = (() => {
-
-  const createBook = (author, title, pages, status) => {
-    return { author, title, pages, status };
-  };
+(() => {
+  const createBook = (author, title, pages, status) => ({
+    author, title, pages, status,
+  });
 
   // cache DOM
   const newBookBtn = document.getElementById('newBookBtn');
@@ -10,14 +9,25 @@ const library = (() => {
   const section = document.querySelector('#bookDisplay');
   const form = document.getElementById('form');
 
-  // bind events
-  newBookBtn.onclick = () => renderForm(formWrapper);
-  form.addEventListener('submit', storeBook);
-  window.addEventListener('load', renderLibrary);
-
   const renderForm = (form) => {
     const swap = form.style.display === 'block' ? form.style.display = 'none' : form.style.display = 'block';
     return swap;
+  };
+
+  newBookBtn.onclick = () => renderForm(formWrapper);
+
+  const toggleBookStatus = (book, bookLibrary, status) => {
+    const changeStatus = book.status === 'read' ? book.status = 'unread' : book.status = 'read';
+    localStorage.setItem('library', JSON.stringify(bookLibrary));
+    status.textContent = book.status;
+    return changeStatus;
+  };
+
+  const deleteBook = (deleteBookBtn, bookLibrary, book) => {
+    deleteBookBtn.parentNode.remove();
+    const bookIndex = bookLibrary.indexOf(book);
+    bookLibrary.splice(bookIndex, 1);
+    localStorage.setItem('library', JSON.stringify(bookLibrary));
   };
 
   const renderBook = (book, bookLibrary) => {
@@ -38,8 +48,8 @@ const library = (() => {
     card.appendChild(pages);
     card.appendChild(status);
     card.appendChild(deleteBookBtn);
-    status.onclick = () => { toggleBookStatus(book, bookLibrary, status) };
-    deleteBookBtn.onclick = () => { deleteBook(deleteBookBtn, bookLibrary, book) };
+    status.onclick = () => { toggleBookStatus(book, bookLibrary, status); };
+    deleteBookBtn.onclick = () => { deleteBook(deleteBookBtn, bookLibrary, book); };
   };
 
   const retrieveBook = (book) => {
@@ -48,7 +58,7 @@ const library = (() => {
     renderBook(newBook, bookLibrary);
   };
 
-  function storeBook(event) {
+  const storeBook = (event) => {
     const author = document.getElementById('author').value;
     const title = document.querySelector('#title').value;
     const pages = document.getElementById('pages').value;
@@ -59,23 +69,11 @@ const library = (() => {
     localStorage.setItem('library', JSON.stringify(localBooks));
     retrieveBook(book);
     event.preventDefault();
-  }
-
-  const toggleBookStatus = (book, bookLibrary, status) => {
-    const changeStatus = book.status === 'read' ? book.status = 'unread' : book.status = 'read';
-    localStorage.setItem('library', JSON.stringify(bookLibrary));
-    status.textContent = book.status;
-    return changeStatus;
   };
 
-  const deleteBook = (deleteBookBtn, bookLibrary, book) => {
-    deleteBookBtn.parentNode.remove();
-    const bookIndex = bookLibrary.indexOf(book);
-    bookLibrary.splice(bookIndex, 1);
-    localStorage.setItem('library', JSON.stringify(bookLibrary));
-  };
+  form.addEventListener('submit', storeBook);
 
-  function renderLibrary() {
+  const renderLibrary = () => {
     const bookLibrary = JSON.parse(localStorage.getItem('library'));
 
     if (bookLibrary) {
@@ -83,5 +81,7 @@ const library = (() => {
         renderBook(book, bookLibrary);
       });
     }
-  }
+  };
+
+  window.addEventListener('load', renderLibrary);
 })();
