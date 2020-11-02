@@ -44,7 +44,7 @@ class Display {
   static toggleBookStatus(statusBtn) {
     if (statusBtn.textContent === 'read') {
       statusBtn.textContent = 'unread';
-    } else {
+    } else if (statusBtn.textContent === 'unread') {
       statusBtn.textContent = 'read';
     }
   }
