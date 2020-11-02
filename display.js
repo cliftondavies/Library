@@ -1,6 +1,8 @@
 import Store from './store';
 
 class Display {
+  static section = document.querySelector('#bookDisplay');
+
   // display form
   static renderForm(form) {
     form.style.display = (form.style.display === 'block') ? 'none' : 'block';
@@ -8,7 +10,6 @@ class Display {
 
   // add book
   static addBook(book) {
-    const section = document.querySelector('#bookDisplay');
     const card = document.createElement('div');
     const author = document.createElement('h3');
     author.textContent = book.author;
@@ -22,7 +23,7 @@ class Display {
     deleteBookBtn.textContent = 'Delete Book';
     const id = document.createElement('h5');
     id.textContent = book.id;
-    section.appendChild(card);
+    Display.section.appendChild(card);
     card.appendChild(author);
     card.appendChild(bookTitle);
     card.appendChild(noOfPages);
@@ -35,11 +36,7 @@ class Display {
   static renderBooks() {
     const storedBooks = Store.retrieveBooks();
 
-    if (storedBooks) { // if statement may may not be needed now since empty array is returned
-      storedBooks.forEach(book => {
-        Display.addBook(book);
-      });
-    }
+    storedBooks.forEach(book => Display.addBook(book));
   }
 
   // change book status on display
