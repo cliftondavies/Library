@@ -1,6 +1,7 @@
 import Store from './store';
 
 class Display {
+  // cache DOM
   static section = document.querySelector('#bookDisplay');
 
   // display form
